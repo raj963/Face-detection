@@ -1,6 +1,7 @@
 let imageUpload = document.getElementById('imageUpload')
 let loader = document.getElementById('loader')
 imageUpload.style.display='none'
+// document.body.append('...Loading model')
 
 Promise.all([
   faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
@@ -9,7 +10,7 @@ Promise.all([
 ]).then(start)
 
 async function start() {
-  const container = document.createElement('div')
+  let  container = document.createElement('div')
   container.style.position = 'relative'
   document.body.append(container)
   const labeledFaceDescriptors = await loadLabeledImages()
@@ -20,7 +21,9 @@ async function start() {
   loader.style.display='none'
   document.body.append('Please select image Loaded')
   imageUpload.addEventListener('change', async () => {
-    if (image) image.remove()
+
+    if (imageUpload.files[0]){
+      if (image) image.remove()
     if (canvas) canvas.remove()
     image = await faceapi.bufferToImage(imageUpload.files[0])
     container.append(image)
@@ -36,7 +39,9 @@ async function start() {
       const drawBox = new faceapi.draw.DrawBox(box, { label: result.toString() })
       drawBox.draw(canvas)
     })
-  })
+    container.style.maxWidth='95%'
+    container.style.maxHeight='95%'
+  }})
 }
 
 function loadLabeledImages() {
